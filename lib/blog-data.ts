@@ -2682,6 +2682,8 @@ The YouTube Partner Program offers incredible opportunities for creators to turn
       "Learn the crucial difference between RPM and CPM on YouTube, how they affect your earnings, and strategies to optimize both metrics for maximum revenue in 2025.",
     content: `# YouTube RPM vs CPM: Understanding Creator Earnings in 2025
 
+![YouTube RPM vs CPM Comparison](/images/YouTube RPM vs CPM.png)
+
 Understanding the difference between RPM (Revenue Per Mille) and CPM (Cost Per Mille) is crucial for YouTube creators who want to maximize their earnings and make informed decisions about their content strategy. These two metrics are often confused, but they represent very different aspects of your channel's monetization performance.
 
 ## What is CPM (Cost Per Mille)?
@@ -3114,7 +3116,7 @@ The YouTube monetization landscape continues to evolve, but understanding these 
     readTime: "16 min read",
     category: "YouTube Analytics",
     tags: ["RPM", "CPM", "YouTube Earnings", "Monetization", "Analytics", "Revenue Optimization"],
-    coverImage: "/placeholder.svg?height=400&width=800&text=YouTube+RPM+vs+CPM+Guide",
+    coverImage: "/images/YouTube RPM vs CPM.png",
     author: {
       name: "Revenue Analytics Expert",
       avatar: "/placeholder.svg?height=40&width=40",
