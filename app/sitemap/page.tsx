@@ -3,9 +3,9 @@ import { blogPosts } from "@/lib/blog-data"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Sitemap - YTMonetizer - Complete Website Structure",
+  title: "Sitemap - YouTube Monetization Checker - Complete Website Structure",
   description:
-    "Complete sitemap of YTMonetizer.com with all pages, tools, and blog posts for YouTube monetization analysis and strategies.",
+    "Complete sitemap of YouTube Monetization Checker with all pages, tools, and blog posts for YouTube monetization analysis and strategies.",
   keywords: "YouTube monetization, sitemap, YouTube earnings, monetization checker, YouTube analytics",
 }
 
@@ -26,9 +26,9 @@ export default function SitemapPage() {
 
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8 text-center">YTMonetizer Sitemap</h1>
+          <h1 className="text-4xl font-bold mb-8 text-center">YouTube Monetization Checker Sitemap</h1>
           <p className="text-lg text-slate-600 mb-12 text-center">
-            Complete index of all pages on YTMonetizer.com to help you navigate our tools and resources
+            Complete index of all pages on YouTube Monetization Checker to help you navigate our tools and resources
           </p>
 
           <div className="space-y-12">
@@ -56,7 +56,7 @@ export default function SitemapPage() {
                   <Link href="/sitemap" className="text-blue-600 hover:underline font-medium">
                     Sitemap
                   </Link>
-                  <p className="text-sm text-slate-600 mt-1">Complete index of all pages on YTMonetizer.com</p>
+                  <p className="text-sm text-slate-600 mt-1">Complete index of all pages on YouTube Monetization Checker</p>
                 </li>
               </ul>
             </section>
@@ -74,20 +74,16 @@ export default function SitemapPage() {
                   </p>
                 </li>
                 <li className="bg-white p-4 rounded-lg shadow-sm">
-                  <span className="text-blue-600 font-medium">YouTube Revenue Calculator</span>
-                  <p className="text-sm text-slate-600 mt-1">
-                    Calculate potential earnings based on views, niche, and audience demographics
-                  </p>
-                </li>
-                <li className="bg-white p-4 rounded-lg shadow-sm">
-                  <span className="text-blue-600 font-medium">Tag Extractor</span>
-                  <p className="text-sm text-slate-600 mt-1">Extract and analyze tags from any YouTube video</p>
-                </li>
-                <li className="bg-white p-4 rounded-lg shadow-sm">
                   <Link href="/tools/youtube/channel-id-finder" className="text-blue-600 hover:underline font-medium">
                     Channel ID Finder
                   </Link>
                   <p className="text-sm text-slate-600 mt-1">Find the channel ID for any YouTube channel</p>
+                </li>
+                <li className="bg-white p-4 rounded-lg shadow-sm">
+                  <Link href="/tools/youtube-tag-extractor" className="text-blue-600 hover:underline font-medium">
+                    YouTube Tag Extractor
+                  </Link>
+                  <p className="text-sm text-slate-600 mt-1">Extract and analyze tags from any YouTube video</p>
                 </li>
               </ul>
             </section>
@@ -104,7 +100,7 @@ export default function SitemapPage() {
                       </Link>
                       <p className="text-sm text-slate-600 mt-1">{post.excerpt}</p>
                       <p className="text-xs text-slate-500 mt-2">
-                        Published: {post.publishedAt} • {post.readTime}
+                        Published: {post.date} • {post.readTime}
                       </p>
                     </li>
                   ))}
@@ -118,7 +114,7 @@ export default function SitemapPage() {
             <h2 className="text-xl font-bold mb-4">XML Sitemap for Search Engines</h2>
             <p className="text-slate-700 mb-4">For search engine crawlers and bots, we provide an XML sitemap at:</p>
             <div className="bg-white p-3 rounded border border-slate-200 font-mono text-sm">
-              https://ytmonetizer.com/sitemap.xml
+              https://youtube-monetization-checker.com/sitemap.xml
             </div>
             <p className="text-sm text-slate-600 mt-4">
               This XML sitemap is automatically updated whenever new content is added to our website.

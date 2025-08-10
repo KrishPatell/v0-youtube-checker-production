@@ -8,9 +8,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="col-span-1">
-            <div className="flex items-center mb-4">
-              <div className="bg-red-600 text-white rounded-lg p-2 mr-3">
-                <span className="font-bold text-lg">YT</span>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">YT</span>
               </div>
               <span className="text-xl font-bold text-slate-900">YTMonetizer</span>
             </div>
@@ -19,9 +19,36 @@ export function Footer() {
             </p>
           </div>
 
+          {/* Company Section */}
+          <div className="col-span-1">
+            <h3 className="font-semibold text-slate-900 mb-4 text-sm">Company</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/about" className="text-slate-600 hover:text-slate-900 text-sm">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="text-slate-600 hover:text-slate-900 text-sm">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="text-slate-600 hover:text-slate-900 text-sm">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-slate-600 hover:text-slate-900 text-sm">
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
+
           {/* Tools Section */}
           <div className="col-span-1">
-            <h3 className="font-semibold text-slate-900 mb-4">Tools</h3>
+            <h3 className="font-semibold text-slate-900 mb-4 text-sm">Tools</h3>
             <ul className="space-y-3">
               <li>
                 <Link href="/" className="text-slate-600 hover:text-slate-900 text-sm">
@@ -34,13 +61,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/" className="text-slate-600 hover:text-slate-900 text-sm">
-                  Revenue Calculator
-                </Link>
-              </li>
-              <li>
-                <Link href="/" className="text-slate-600 hover:text-slate-900 text-sm">
-                  Analytics Dashboard
+                <Link href="/tools/youtube-tag-extractor" className="text-slate-600 hover:text-slate-900 text-sm">
+                  YouTube Tag Extractor
                 </Link>
               </li>
             </ul>
@@ -48,7 +70,7 @@ export function Footer() {
 
           {/* Resources Section */}
           <div className="col-span-1">
-            <h3 className="font-semibold text-slate-900 mb-4">Resources</h3>
+            <h3 className="font-semibold text-slate-900 mb-4 text-sm">Resources</h3>
             <ul className="space-y-3">
               <li>
                 <Link href="/blogs" className="text-slate-600 hover:text-slate-900 text-sm">
@@ -56,45 +78,18 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/" className="text-slate-600 hover:text-slate-900 text-sm">
+                <Link href="/api-docs" className="text-slate-600 hover:text-slate-900 text-sm">
                   API Documentation
                 </Link>
               </li>
               <li>
-                <Link href="/" className="text-slate-600 hover:text-slate-900 text-sm">
+                <Link href="/help" className="text-slate-600 hover:text-slate-900 text-sm">
                   Help Center
                 </Link>
               </li>
               <li>
                 <Link href="/sitemap" className="text-slate-600 hover:text-slate-900 text-sm">
                   Sitemap
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Company Section */}
-          <div className="col-span-1">
-            <h3 className="font-semibold text-slate-900 mb-4">Company</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/" className="text-slate-600 hover:text-slate-900 text-sm">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/" className="text-slate-600 hover:text-slate-900 text-sm">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/" className="text-slate-600 hover:text-slate-900 text-sm">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link href="/" className="text-slate-600 hover:text-slate-900 text-sm">
-                  Contact
                 </Link>
               </li>
             </ul>

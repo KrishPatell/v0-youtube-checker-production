@@ -1,55 +1,73 @@
-import { blogPosts } from "../../lib/blog-data"
+import { NextRequest } from 'next/server'
+import { blogData } from '@/lib/blog-data'
 
-export async function GET() {
-  const baseUrl = "https://ytmonetizer.com"
+export async function GET(request: NextRequest) {
+  const baseUrl = 'https://youtube-monetization-checker.com'
+  
+  // Static pages
+  const staticPages = [
+    {
+      url: `${baseUrl}/`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 1.0
+    },
+    {
+      url: `${baseUrl}/blogs`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8
+    },
+    {
+      url: `${baseUrl}/sitemap`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6
+    }
+  ]
 
-  // Format the current date in ISO format
-  const date = new Date().toISOString()
+  // Tool pages
+  const toolPages = [
+    {
+      url: `${baseUrl}/tools/youtube/channel-id-finder`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8
+    },
+    {
+      url: `${baseUrl}/tools/youtube-tag-extractor`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8
+    }
+  ]
 
-  // Create the XML sitemap
+  // Blog pages
+  const blogPages = blogData.map(blog => ({
+    url: `${baseUrl}/blogs/${blog.slug}`,
+    lastModified: new Date(blog.date),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7
+  }))
+
+  // Combine all pages
+  const allPages = [...staticPages, ...toolPages, ...blogPages]
+
+  // Generate XML sitemap
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${baseUrl}</loc>
-    <lastmod>${date}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/blogs</loc>
-    <lastmod>${date}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/tools/youtube/channel-id-finder</loc>
-    <lastmod>${date}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/sitemap</loc>
-    <lastmod>${date}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  ${blogPosts
-    .map(
-      (post) => `
-  <url>
-    <loc>${baseUrl}/blogs/${post.slug}</loc>
-    <lastmod>${post.publishedAt}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>`,
-    )
-    .join("")}
+${allPages.map(page => `  <url>
+    <loc>${page.url}</loc>
+    <lastmod>${page.lastModified.toISOString()}</lastmod>
+    <changefreq>${page.changeFrequency}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`).join('\n')}
 </urlset>`
 
-  // Return the XML with the correct content type
   return new Response(xml, {
     headers: {
-      "Content-Type": "application/xml",
-    },
+      'Content-Type': 'application/xml',
+      'Cache-Control': 'public, max-age=3600, s-maxage=86400'
+    }
   })
 }
