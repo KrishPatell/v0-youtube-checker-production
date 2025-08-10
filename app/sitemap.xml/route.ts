@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
   // Blog pages
   const blogPages = blogPosts.map(blog => ({
     url: `${baseUrl}/blogs/${blog.slug}`,
-    lastModified: new Date(blog.date),
+    lastModified: new Date(blog.publishedAt),
     changeFrequency: 'monthly' as const,
     priority: 0.7
   }))
