@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { blogData } from '@/lib/blog-data'
+import { blogPosts } from '@/lib/blog-data'
 
 export async function GET(request: NextRequest) {
   const baseUrl = 'https://youtube-monetization-checker.com'
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
   ]
 
   // Blog pages
-  const blogPages = blogData.map(blog => ({
+  const blogPages = blogPosts.map(blog => ({
     url: `${baseUrl}/blogs/${blog.slug}`,
     lastModified: new Date(blog.date),
     changeFrequency: 'monthly' as const,
