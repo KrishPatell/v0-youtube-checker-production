@@ -1,4 +1,4 @@
-import { Youtube, Search, FileText, Clock } from "lucide-react"
+import { Youtube, Search, FileText, Clock, Tag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -38,6 +38,12 @@ export function Header() {
             <Button variant="ghost" size="sm" className="text-slate-700 flex items-center gap-1">
               <Search className="h-4 w-4" />
               <span>Channel ID Finder</span>
+            </Button>
+          </Link>
+          <Link href="/tools/youtube-tag-extractor" passHref>
+            <Button variant="ghost" size="sm" className="text-slate-700 flex items-center gap-1">
+              <Tag className="h-4 w-4" />
+              <span>Tag Extractor</span>
             </Button>
           </Link>
         </nav>
