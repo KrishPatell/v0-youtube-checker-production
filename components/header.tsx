@@ -1,6 +1,6 @@
 "use client"
 
-import { Youtube, Search, FileText, Clock, Tag, Menu, X } from "lucide-react"
+import { Youtube, Search, FileText, Clock, Tag, Menu, X, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useState } from "react"
@@ -36,6 +36,11 @@ export function Header() {
       href: "/tools/youtube-tag-extractor",
       icon: Tag,
       label: "Tag Extractor"
+    },
+    {
+      href: "/tools/youtube/shorts-downloader",
+      icon: Download,
+      label: "Shorts Downloader"
     }
   ]
 
