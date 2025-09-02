@@ -58,6 +58,18 @@ export default function SitemapPage() {
                   </Link>
                   <p className="text-sm text-slate-600 mt-1">Complete index of all pages on YouTube Monetization Checker</p>
                 </li>
+                <li className="bg-white p-4 rounded-lg shadow-sm">
+                  <Link href="/tools/youtube/shorts-downloader" className="text-blue-600 hover:underline font-medium">
+                    Shorts Downloader
+                  </Link>
+                  <p className="text-sm text-slate-600 mt-1">Download YouTube Shorts</p>
+                </li>
+                <li className="bg-white p-4 rounded-lg shadow-sm">
+                  <Link href="/tools/youtube/copyright-checker" className="text-blue-600 hover:underline font-medium">
+                    Copyright Checker
+                  </Link>
+                  <p className="text-sm text-slate-600 mt-1">Check license, visibility, and restrictions</p>
+                </li>
               </ul>
             </section>
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { Youtube, Search, FileText, Clock, Tag, Menu, X, Download } from "lucide-react"
+import { Youtube, Search, FileText, Menu, X, Download, Shield as ShieldIcon, Tags as TagsIcon, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useState } from "react"
@@ -11,37 +11,11 @@ export function Header() {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const closeMenu = () => setIsMenuOpen(false)
 
-  const navigationItems = [
-    {
-      href: "/",
-      icon: Search,
-      label: "Monetization Checker"
-    },
-    {
-      href: "/blogs",
-      icon: FileText,
-      label: "Blog"
-    },
-    {
-      href: "/sitemap",
-      icon: Clock,
-      label: "Sitemap"
-    },
-    {
-      href: "/tools/youtube/channel-id-finder",
-      icon: Search,
-      label: "Channel ID Finder"
-    },
-    {
-      href: "/tools/youtube-tag-extractor",
-      icon: Tag,
-      label: "Tag Extractor"
-    },
-    {
-      href: "/tools/youtube/shorts-downloader",
-      icon: Download,
-      label: "Shorts Downloader"
-    }
+  const tools = [
+    { href: "/tools/youtube/channel-id-finder", icon: Search, label: "Channel ID Finder" },
+    { href: "/tools/youtube/shorts-downloader", icon: Download, label: "Shorts Downloader" },
+    { href: "/tools/youtube/copyright-checker", icon: ShieldIcon, label: "Copyright Checker" },
+    { href: "/tools/youtube-tag-extractor", icon: TagsIcon, label: "Tag Extractor" },
   ]
 
   return (
@@ -58,15 +32,32 @@ export function Header() {
         </div>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-2">
-          {navigationItems.map((item) => (
-            <Link key={item.href} href={item.href} passHref>
-              <Button variant="ghost" size="sm" className="text-slate-700 flex items-center gap-1">
-                <item.icon className="h-4 w-4" />
-                <span>{item.label}</span>
-              </Button>
-            </Link>
-          ))}
+        <nav className="hidden md:flex items-center space-x-2 relative">
+          <Link href="/" passHref>
+            <Button variant="ghost" size="sm" className="text-slate-700">Home</Button>
+          </Link>
+
+          {/* Tools Dropdown */}
+          <div className="group relative">
+            <Button variant="ghost" size="sm" className="text-slate-700 flex items-center gap-1">
+              YouTube Tools <ChevronDown className="h-4 w-4" />
+            </Button>
+            <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 hover:visible hover:opacity-100 transition-opacity duration-150 absolute left-0 mt-1 w-72 bg-white border rounded-lg shadow-lg p-2 z-50">
+              {tools.map((t) => (
+                <Link key={t.href} href={t.href} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-slate-50">
+                  <t.icon className="h-4 w-4 text-slate-600" />
+                  <span className="text-sm text-slate-800">{t.label}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <Link href="/blogs" passHref>
+            <Button variant="ghost" size="sm" className="text-slate-700">Blog</Button>
+          </Link>
+          <Link href="/" passHref>
+            <Button variant="outline" size="sm" className="text-slate-700">Monetization Checker</Button>
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -114,17 +105,18 @@ export function Header() {
             
             <nav className="p-4">
               <div className="space-y-2">
-                {navigationItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={closeMenu}
-                    className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                  >
-                    <item.icon className="h-5 w-5 text-gray-600" />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
-                ))}
+                <Link href="/" onClick={closeMenu} className="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">Home</Link>
+                <div className="border rounded-lg">
+                  <div className="px-4 py-2 text-xs uppercase text-slate-500">YouTube Tools</div>
+                  {tools.map((t) => (
+                    <Link key={t.href} href={t.href} onClick={closeMenu} className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50">
+                      <t.icon className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium">{t.label}</span>
+                    </Link>
+                  ))}
+                </div>
+                <Link href="/blogs" onClick={closeMenu} className="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">Blog</Link>
+                <Link href="/" onClick={closeMenu} className="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">Monetization Checker</Link>
               </div>
               
               {/* Language Selector in Mobile Menu */}

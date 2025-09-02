@@ -692,6 +692,53 @@ export default function YouTubeTagExtractor() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Tools Grid for internal linking */}
+      <div className="mt-16">
+        {/* @ts-expect-error Server Component import in client file is plain JSX */}
+        <div>
+          {/* Inline to avoid circular client/server issues: we render a simple grid here */}
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-center mb-2">YouTube Tools</h2>
+            <p className="text-center text-gray-600 mb-8">Explore more free tools to streamline your YouTube workflow</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Channel ID Finder</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-gray-600">
+                Quickly find the unique ID for any YouTube channel.
+                <div className="mt-4">
+                  <a href="/tools/youtube/channel-id-finder" className="inline-flex"><Button>Try Now →</Button></a>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Shorts Downloader</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-gray-600">
+                Download YouTube Shorts in one click.
+                <div className="mt-4">
+                  <a href="/tools/youtube/shorts-downloader" className="inline-flex"><Button>Try Now →</Button></a>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Copyright Checker</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-gray-600">
+                Check license, visibility and region restrictions.
+                <div className="mt-4">
+                  <a href="/tools/youtube/copyright-checker" className="inline-flex"><Button>Try Now →</Button></a>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
