@@ -14,7 +14,7 @@ export function Header() {
   const tools = [
     { href: "/", icon: Search, label: "Monetization Checker" },
     { href: "/tools/youtube/channel-id-finder", icon: Search, label: "Channel ID Finder" },
-    { href: "/tools/youtube/shorts-downloader", icon: Download, label: "Shorts Downloader" },
+    // { href: "/tools/youtube/shorts-downloader", icon: Download, label: "Shorts Downloader" },
     { href: "/tools/youtube/copyright-checker", icon: ShieldIcon, label: "Copyright Checker" },
     { href: "/tools/youtube-tag-extractor", icon: TagsIcon, label: "Tag Extractor" },
   ]

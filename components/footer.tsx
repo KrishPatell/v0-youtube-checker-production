@@ -65,11 +65,11 @@ export function Footer() {
                   YouTube Tag Extractor
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/tools/youtube/shorts-downloader" className="text-slate-600 hover:text-slate-900 text-sm">
                   Shorts Downloader
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="/tools/youtube/copyright-checker" className="text-slate-600 hover:text-slate-900 text-sm">
                   Copyright Checker

@@ -56,6 +56,7 @@ interface ShortsData {
   }[]
 }
 
+// Draft notice: Temporarily disabled pending compliance review
 export default function YouTubeShortsDownloader() {
   const [url, setUrl] = useState("")
   const [shortsData, setShortsData] = useState<ShortsData | null>(null)
@@ -159,16 +160,15 @@ export default function YouTubeShortsDownloader() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              YouTube Shorts Downloader
+              YouTube Shorts Downloader (Temporarily Unavailable)
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Download YouTube Shorts videos in multiple formats including MP4, MP3, HD, and 4K quality. 
-              Free, fast, and secure downloads for content creators and enthusiasts.
+              This page was published due to a technical error and has been taken down while we complete our YouTube API Services compliance review. We apologize for the inconvenience.
             </p>
           </div>
 
-          {/* Main Tool */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          {/* Main Tool disabled intentionally */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full hidden">
             <TabsList className="grid w-full grid-cols-2 mb-8">
               <TabsTrigger value="downloader">Shorts Downloader</TabsTrigger>
               <TabsTrigger value="results">Download Results</TabsTrigger>
