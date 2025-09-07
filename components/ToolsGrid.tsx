@@ -22,19 +22,21 @@ export default function ToolsGrid() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Shorts Downloader</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-gray-600">
-            Download YouTube Shorts in one click.
-            <div className="mt-4">
-              <Link href="/tools/youtube/shorts-downloader">
-                <Button>Try Now →</Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        {false && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Shorts Downloader</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-gray-600">
+              Download YouTube Shorts in one click.
+              <div className="mt-4">
+                <Link href="/tools/youtube/shorts-downloader">
+                  <Button>Try Now →</Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>

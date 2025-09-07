@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import type { Metadata } from "next"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import { formatDate } from "@/lib/utils"
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -107,7 +108,7 @@ export default async function BlogPost({ params }: Props) {
                 </div>
                 <div className="flex items-center mr-6 mb-2">
                   <Calendar className="h-4 w-4 mr-2" />
-                  <span>{post.publishedAt}</span>
+                  <span>{formatDate(post.publishedAt)}</span>
                 </div>
                 <div className="flex items-center mb-2">
                   <Clock className="h-4 w-4 mr-2" />
@@ -142,7 +143,22 @@ export default async function BlogPost({ params }: Props) {
                     h2: ({children, ...props}: any) => <h2 id={children?.toString().toLowerCase().replace(/[^\w]+/g, "-")} {...props} />,
                     h3: ({children, ...props}: any) => <h3 id={children?.toString().toLowerCase().replace(/[^\w]+/g, "-")} {...props} />,
                     img: ({...props}: any) => <img {...props} className="rounded-lg shadow-md" />,
-                    a: ({...props}: any) => <a {...props} className="text-blue-600 hover:text-blue-800 underline" />,
+                    a: ({href, children, ...props}: any) => {
+                      // Check if it's an internal link (starts with / or is a relative path)
+                      const isInternal = href?.startsWith('/') || href?.startsWith('#') || !href?.includes('://')
+                      
+                      return (
+                        <a 
+                          {...props} 
+                          href={href}
+                          className="text-blue-600 hover:text-blue-800 underline"
+                          rel={isInternal ? undefined : "nofollow noopener noreferrer"}
+                          target={isInternal ? undefined : "_blank"}
+                        >
+                          {children}
+                        </a>
+                      )
+                    },
                     code: ({inline, className, children, ...props}: any) => 
                       inline ? 
                         <code {...props} className="bg-slate-100 px-1 py-0.5 rounded text-sm" /> : 

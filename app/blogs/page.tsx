@@ -4,6 +4,7 @@ import { blogPosts } from "@/lib/blog-data"
 import { Card, CardContent } from "@/components/ui/card"
 import { Youtube, Search, FileText, Clock } from "lucide-react"
 import type { Metadata } from "next"
+import { formatDate } from "@/lib/utils"
 
 export const metadata: Metadata = {
   title: "Blog - YTMonetizer - YouTube Monetization Insights & Strategies",
@@ -80,7 +81,7 @@ export default function BlogsPage() {
                         <div className="text-sm text-slate-600">
                           <span>{post.author.name}</span>
                           <span className="mx-2">•</span>
-                          <span>{post.publishedAt}</span>
+                          <span>{formatDate(post.publishedAt)}</span>
                         </div>
                       </div>
                       <h2 className="text-xl font-bold mb-2 group-hover:text-blue-600 transition-colors">
@@ -127,7 +128,7 @@ export default function BlogsPage() {
                           </h2>
                           <p className="text-slate-600 text-sm mb-4 flex-grow">{post.excerpt}</p>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-slate-500">{post.publishedAt}</span>
+                            <span className="text-sm text-slate-500">{formatDate(post.publishedAt)}</span>
                             <span className="text-sm text-slate-500">{post.readTime}</span>
                           </div>
                         </CardContent>

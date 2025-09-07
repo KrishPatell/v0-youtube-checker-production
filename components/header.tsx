@@ -12,8 +12,9 @@ export function Header() {
   const closeMenu = () => setIsMenuOpen(false)
 
   const tools = [
+    { href: "/", icon: Search, label: "Monetization Checker" },
     { href: "/tools/youtube/channel-id-finder", icon: Search, label: "Channel ID Finder" },
-    { href: "/tools/youtube/shorts-downloader", icon: Download, label: "Shorts Downloader" },
+    // { href: "/tools/youtube/shorts-downloader", icon: Download, label: "Shorts Downloader" },
     { href: "/tools/youtube/copyright-checker", icon: ShieldIcon, label: "Copyright Checker" },
     { href: "/tools/youtube-tag-extractor", icon: TagsIcon, label: "Tag Extractor" },
   ]
@@ -55,8 +56,7 @@ export function Header() {
           <Link href="/blogs" passHref>
             <Button variant="ghost" size="sm" className="text-slate-700">Blog</Button>
           </Link>
-          <Link href="/" passHref>
-            <Button variant="outline" size="sm" className="text-slate-700">Monetization Checker</Button>
+          <Link href="/blogs" passHref>
           </Link>
         </nav>
 

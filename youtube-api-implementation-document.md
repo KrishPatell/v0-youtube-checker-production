@@ -10,7 +10,7 @@
 
 ## 1. Executive Summary
 
-YT Monetizer is a web-based platform that helps YouTube creators check their channel's monetization eligibility and access channel analytics. Our tool uses YouTube Data API v3 to provide creators with real-time insights into thei.waar channel performance and monetization requirements.
+YT Monetizer is a web-based platform that helps YouTube creators check their channel's monetization eligibility and access channel analytics. Our tool uses YouTube Data API v3 to provide creators with real-time insights into thei.lwaar channel performance and monetization requirements.
 
 **Primary Purpose:** Enable YouTube creators to quickly assess their eligibility for YouTube's Partner Program and access channel growth insights.
 
