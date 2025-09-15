@@ -18,6 +18,14 @@ export default function YouTubeVideoAnalyzer() {
   const [status, setStatus] = useState('Ready to analyze video')
 
   const analyzeVideo = async () => {
+    // Check if URL is from YouTube
+    const isYouTubeUrl = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')
+    
+    if (isYouTubeUrl) {
+      setStatus('❌ YouTube URLs are not yet supported. Please use direct video file URLs.')
+      return
+    }
+
     setIsAnalyzing(true)
     setStatus('🔄 Analyzing video properties...')
     setLoadProgress(0)
@@ -141,6 +149,15 @@ export default function YouTubeVideoAnalyzer() {
         </p>
       </div>
 
+      {/* Important Notice */}
+      <Alert className="mb-6 border-blue-500 bg-blue-50 dark:bg-blue-950">
+        <Info className="h-4 w-4" />
+        <AlertDescription className="text-sm">
+          <strong>Current Beta Limitations:</strong> This tool currently analyzes direct video files (MP4, WebM) from sources like S3, Vimeo, or direct hosting. 
+          YouTube URL analysis is coming soon! For now, use direct video file URLs.
+        </AlertDescription>
+      </Alert>
+
       {/* Video URL Input */}
       <Card className="mb-8">
         <CardHeader>
@@ -149,42 +166,88 @@ export default function YouTubeVideoAnalyzer() {
             Video URL Analysis
           </CardTitle>
           <CardDescription>
-            Enter a video URL to analyze its properties and get optimization suggestions
+            Enter a direct video file URL to analyze its properties and get optimization suggestions
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4">
-            <Input
-              placeholder="Enter video URL (YouTube, Vimeo, direct MP4, etc.)"
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-              className="flex-1"
-            />
-            <Button 
-              onClick={analyzeVideo} 
-              disabled={isAnalyzing || !videoUrl}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {isAnalyzing ? (
-                <>
-                  <Zap className="h-4 w-4 mr-2 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Analyze Video
-                </>
-              )}
-            </Button>
-          </div>
-          
-          {isAnalyzing && (
-            <div className="mt-4">
-              <Progress value={loadProgress} className="mb-2" />
-              <p className="text-sm text-muted-foreground">{status}</p>
+          <div className="space-y-4">
+            {/* Supported formats info */}
+            <div className="p-3 bg-muted rounded-lg">
+              <h4 className="font-medium text-sm mb-2">✅ Currently Supported:</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                <span className="flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  Direct MP4 files
+                </span>
+                <span className="flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  S3/Cloud storage
+                </span>
+                <span className="flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  Vimeo direct links
+                </span>
+                <span className="flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  CDN-hosted videos
+                </span>
+              </div>
+              
+              <h4 className="font-medium text-sm mb-2 mt-3">🚧 Coming Soon:</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                <span className="flex items-center gap-1">
+                  <AlertTriangle className="h-3 w-3 text-yellow-500" />
+                  YouTube URLs
+                </span>
+                <span className="flex items-center gap-1">
+                  <AlertTriangle className="h-3 w-3 text-yellow-500" />
+                  YouTube Shorts
+                </span>
+                <span className="flex items-center gap-1">
+                  <AlertTriangle className="h-3 w-3 text-yellow-500" />
+                  Private YouTube videos
+                </span>
+              </div>
             </div>
-          )}
+
+            <div className="flex gap-4">
+              <Input
+                placeholder="Enter direct video file URL (e.g., https://example.com/video.mp4)"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                className="flex-1"
+              />
+              <Button 
+                onClick={analyzeVideo} 
+                disabled={isAnalyzing || !videoUrl}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Zap className="h-4 w-4 mr-2 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Analyze Video
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Example URLs */}
+            <div className="text-xs text-muted-foreground">
+              <strong>Example formats:</strong> https://example.com/video.mp4, https://vimeo.com/direct-link.mp4, https://s3.amazonaws.com/bucket/video.mp4
+            </div>
+            
+            {isAnalyzing && (
+              <div className="mt-4">
+                <Progress value={loadProgress} className="mb-2" />
+                <p className="text-sm text-muted-foreground">{status}</p>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -467,26 +530,78 @@ export default function YouTubeVideoAnalyzer() {
         </>
       )}
 
-      {/* Call to Action */}
-      <Card className="mt-8 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950 dark:to-orange-950">
-        <CardContent className="text-center py-8">
-          <h3 className="text-2xl font-bold mb-4">🚀 Ready to Optimize Your YouTube Channel?</h3>
-          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Use our complete suite of YouTube monetization tools to check your eligibility, 
-            analyze your performance, and optimize your content for maximum revenue.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-red-600 hover:bg-red-700">
-              <MousePointer className="h-4 w-4 mr-2" />
-              Check Monetization Status
-            </Button>
-            <Button variant="outline">
-              <TrendingUp className="h-4 w-4 mr-2" />
-              View All Tools
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          {/* Feature Roadmap */}
+          <Card className="mt-8 border-dashed">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                🚧 YouTube Integration Roadmap
+              </CardTitle>
+              <CardDescription>
+                We're actively working on YouTube URL support. Here's what's coming:
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-sm flex items-center gap-2">
+                      <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                      Phase 1 - Coming Soon
+                    </h4>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      <li>• YouTube URL metadata extraction</li>
+                      <li>• Basic video information (duration, title)</li>
+                      <li>• Monetization eligibility checks</li>
+                      <li>• Video quality recommendations</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-sm flex items-center gap-2">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      Phase 2 - Advanced Features
+                    </h4>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      <li>• YouTube Shorts analysis</li>
+                      <li>• Engagement metrics analysis</li>
+                      <li>• Revenue optimization suggestions</li>
+                      <li>• Competitor video comparison</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <Alert className="mt-4">
+                  <Info className="h-4 w-4" />
+                  <AlertDescription className="text-sm">
+                    <strong>Want early access?</strong> Join our beta program to test YouTube URL features as soon as they're available. 
+                    We'll notify you when the YouTube integration is ready!
+                  </AlertDescription>
+                </Alert>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Call to Action */}
+          <Card className="mt-8 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950 dark:to-orange-950">
+            <CardContent className="text-center py-8">
+              <h3 className="text-2xl font-bold mb-4">🚀 Ready to Optimize Your YouTube Channel?</h3>
+              <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                While we're building YouTube URL support, use our complete suite of YouTube monetization tools to check your eligibility, 
+                analyze your performance, and optimize your content for maximum revenue.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button className="bg-red-600 hover:bg-red-700">
+                  <MousePointer className="h-4 w-4 mr-2" />
+                  Check Monetization Status
+                </Button>
+                <Button variant="outline">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  View All Tools
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
     </div>
   )
 }
