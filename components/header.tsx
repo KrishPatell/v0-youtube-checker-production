@@ -1,6 +1,6 @@
 "use client"
 
-import { Youtube, Search, FileText, Menu, X, Download, Shield as ShieldIcon, Tags as TagsIcon, ChevronDown } from "lucide-react"
+import { Youtube, Search, FileText, Menu, X, Download, Shield as ShieldIcon, Tags as TagsIcon, ChevronDown, BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useState } from "react"
@@ -14,6 +14,7 @@ export function Header() {
   const tools = [
     { href: "/", icon: Search, label: "Monetization Checker" },
     { href: "/tools/youtube/channel-id-finder", icon: Search, label: "Channel ID Finder" },
+    { href: "/tools/youtube-video-analyzer", icon: BarChart3, label: "Video Analyzer" },
     // { href: "/tools/youtube/shorts-downloader", icon: Download, label: "Shorts Downloader" },
     { href: "/tools/youtube/copyright-checker", icon: ShieldIcon, label: "Copyright Checker" },
     { href: "/tools/youtube-tag-extractor", icon: TagsIcon, label: "Tag Extractor" },

@@ -39,6 +39,18 @@ export async function GET(request: NextRequest) {
       lastModified: new Date(),
       changeFrequency: 'monthly' as const,
       priority: 0.8
+    },
+    {
+      url: `${baseUrl}/tools/youtube-video-analyzer`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8
+    },
+    {
+      url: `${baseUrl}/ranking-dashboard`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.6
     }
   ]
 
