@@ -11,13 +11,19 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ArrowUp, ArrowDown, Minus, ExternalLink, BarChart3, TrendingUp, Eye, MousePointer, Play, Download, Zap, FileText, AlertTriangle, CheckCircle, Info } from "lucide-react"
 
 export default function YouTubeVideoAnalyzer() {
-  const [videoUrl, setVideoUrl] = useState('https://web-assets.quickads.ai/06_Quickads_Music+Caption.mp4')
+  const [videoUrl, setVideoUrl] = useState('')
   const [analysisData, setAnalysisData] = useState<any>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)
   const [status, setStatus] = useState('Ready to analyze video')
 
   const analyzeVideo = async () => {
+    // Validate URL format
+    if (!videoUrl || !videoUrl.startsWith('http')) {
+      setStatus('❌ Please enter a valid URL starting with http:// or https://')
+      return
+    }
+
     // Check if URL is from YouTube
     const isYouTubeUrl = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')
     
@@ -34,17 +40,24 @@ export default function YouTubeVideoAnalyzer() {
       // Simulate analysis progress
       const progressInterval = setInterval(() => {
         setLoadProgress(prev => Math.min(prev + 10, 90))
-      }, 200)
+      }, 300)
 
-      // Get video metadata
+      // Try to get video metadata
       const response = await fetch(videoUrl, { method: 'HEAD' })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: Could not access video file`)
+      }
+
       const fileSize = response.headers.get('content-length')
       
       if (fileSize) {
         const sizeInMB = (parseInt(fileSize) / 1024 / 1024)
         const sizeInGB = sizeInMB / 1024
 
-        // Simulate getting video metadata
+        // Estimate video duration based on file type and size
+        const estimatedDuration = Math.max(60, Math.min(sizeInMB * 0.5, 1800)) // 1-30 minutes based on size
+
         setTimeout(() => {
           clearInterval(progressInterval)
           setLoadProgress(100)
@@ -52,24 +65,29 @@ export default function YouTubeVideoAnalyzer() {
           const mockAnalysis = {
             fileSize: sizeInMB,
             fileSizeGB: sizeInGB,
-            duration: 420, // 7 minutes
-            resolution: '1920x1080',
-            bitrate: ((parseInt(fileSize) * 8) / 420 / 1000).toFixed(0),
-            loadTime: 2.5,
+            duration: estimatedDuration,
+            resolution: sizeInMB > 100 ? '1920x1080' : sizeInMB > 50 ? '1280x720' : '854x480',
+            bitrate: ((parseInt(fileSize) * 8) / estimatedDuration / 1000).toFixed(0),
+            loadTime: sizeInMB / 10, // Rough estimate
             streamSpeed: 15.2,
-            sizePerMinute: sizeInMB / 7,
+            sizePerMinute: sizeInMB / (estimatedDuration / 60),
             isWebOptimized: sizeInMB < 50,
             mobileOptimized: sizeInMB < 25,
-            suggestions: generateSuggestions(sizeInMB, 420)
+            suggestions: generateSuggestions(sizeInMB, estimatedDuration)
           }
           
           setAnalysisData(mockAnalysis)
           setStatus('✅ Analysis complete!')
           setIsAnalyzing(false)
         }, 2000)
+      } else {
+        clearInterval(progressInterval)
+        setStatus('❌ Could not determine file size. Server may not support HEAD requests.')
+        setIsAnalyzing(false)
       }
     } catch (error) {
-      setStatus('❌ Error analyzing video')
+      setLoadProgress(0)
+      setStatus(`❌ Error analyzing video: ${error instanceof Error ? error.message : 'Network error'}`)
       setIsAnalyzing(false)
     }
   }
@@ -236,9 +254,29 @@ export default function YouTubeVideoAnalyzer() {
               </Button>
             </div>
 
-            {/* Example URLs */}
-            <div className="text-xs text-muted-foreground">
-              <strong>Example formats:</strong> https://example.com/video.mp4, https://vimeo.com/direct-link.mp4, https://s3.amazonaws.com/bucket/video.mp4
+            {/* Example URLs and Test Button */}
+            <div className="space-y-2">
+              <div className="text-xs text-muted-foreground">
+                <strong>Example formats:</strong> https://example.com/video.mp4, https://vimeo.com/direct-link.mp4, https://s3.amazonaws.com/bucket/video.mp4
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setVideoUrl('https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4')}
+                  className="text-xs"
+                >
+                  Try Sample Video
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setVideoUrl('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')}
+                  className="text-xs"
+                >
+                  Try Big Buck Bunny
+                </Button>
+              </div>
             </div>
             
             {isAnalyzing && (
@@ -256,6 +294,9 @@ export default function YouTubeVideoAnalyzer() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Video Preview</CardTitle>
+            <CardDescription>
+              Note: Some videos may not display due to CORS restrictions, but analysis will still work
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex justify-center">
@@ -265,9 +306,13 @@ export default function YouTubeVideoAnalyzer() {
                 preload="metadata"
                 className="max-w-full h-auto rounded-lg shadow-lg"
                 style={{ maxHeight: '400px' }}
+                onError={() => console.log('Video preview not available (CORS or format restrictions)')}
               >
                 Your browser does not support the video tag.
               </video>
+            </div>
+            <div className="mt-3 text-sm text-muted-foreground text-center">
+              Video URL: <code className="bg-muted px-1 rounded text-xs">{videoUrl}</code>
             </div>
           </CardContent>
         </Card>
