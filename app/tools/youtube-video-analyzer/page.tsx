@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -16,6 +16,49 @@ export default function YouTubeVideoAnalyzer() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)
   const [status, setStatus] = useState('Ready to analyze video')
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [realTimeStats, setRealTimeStats] = useState<any>(null)
+  const [startTime, setStartTime] = useState<number | null>(null)
+
+  // Real video event handlers
+  const handleVideoLoadStart = () => {
+    setStartTime(performance.now())
+    setStatus('🔄 Video loading started...')
+  }
+
+  const handleVideoLoadedMetadata = () => {
+    if (videoRef.current) {
+      const video = videoRef.current
+      const durationMinutes = Math.floor(video.duration / 60)
+      const durationSeconds = Math.floor(video.duration % 60)
+      const durationText = `${durationMinutes}:${durationSeconds.toString().padStart(2, '0')}`
+      
+      setRealTimeStats(prev => ({
+        ...prev,
+        duration: durationText,
+        durationSeconds: video.duration,
+        resolution: `${video.videoWidth}x${video.videoHeight}`,
+        videoWidth: video.videoWidth,
+        videoHeight: video.videoHeight
+      }))
+      
+      setStatus('✅ Video metadata loaded successfully!')
+    }
+  }
+
+  const handleVideoCanPlay = () => {
+    if (startTime && videoRef.current) {
+      const loadTime = (performance.now() - startTime) / 1000
+      setRealTimeStats(prev => ({
+        ...prev,
+        loadTime: loadTime.toFixed(2)
+      }))
+    }
+  }
+
+  const handleVideoError = () => {
+    setStatus('❌ Error loading video - may be due to CORS restrictions')
+  }
 
   const analyzeVideo = async () => {
     // Validate URL format
@@ -55,31 +98,42 @@ export default function YouTubeVideoAnalyzer() {
         const sizeInMB = (parseInt(fileSize) / 1024 / 1024)
         const sizeInGB = sizeInMB / 1024
 
-        // Estimate video duration based on file type and size
-        const estimatedDuration = Math.max(60, Math.min(sizeInMB * 0.5, 1800)) // 1-30 minutes based on size
+        setRealTimeStats(prev => ({
+          ...prev,
+          fileSize: sizeInMB,
+          fileSizeGB: sizeInGB,
+          fileSizeMB: sizeInMB.toFixed(2)
+        }))
 
+        // Wait for video metadata or use estimates
         setTimeout(() => {
           clearInterval(progressInterval)
           setLoadProgress(100)
           
-          const mockAnalysis = {
+          const actualDuration = realTimeStats?.durationSeconds || Math.max(60, Math.min(sizeInMB * 0.5, 1800))
+          const actualResolution = realTimeStats?.resolution || (sizeInMB > 100 ? '1920x1080' : sizeInMB > 50 ? '1280x720' : '854x480')
+          const actualLoadTime = realTimeStats?.loadTime || (sizeInMB / 10).toFixed(2)
+
+          const combinedAnalysis = {
             fileSize: sizeInMB,
             fileSizeGB: sizeInGB,
-            duration: estimatedDuration,
-            resolution: sizeInMB > 100 ? '1920x1080' : sizeInMB > 50 ? '1280x720' : '854x480',
-            bitrate: ((parseInt(fileSize) * 8) / estimatedDuration / 1000).toFixed(0),
-            loadTime: sizeInMB / 10, // Rough estimate
-            streamSpeed: 15.2,
-            sizePerMinute: sizeInMB / (estimatedDuration / 60),
+            duration: actualDuration,
+            durationText: realTimeStats?.duration || `${Math.floor(actualDuration / 60)}:${(Math.floor(actualDuration % 60)).toString().padStart(2, '0')}`,
+            resolution: actualResolution,
+            bitrate: ((parseInt(fileSize) * 8) / actualDuration / 1000).toFixed(0),
+            loadTime: actualLoadTime,
+            streamSpeed: (sizeInMB / parseFloat(actualLoadTime) * 8 / 1000).toFixed(1), // Mbps
+            sizePerMinute: sizeInMB / (actualDuration / 60),
             isWebOptimized: sizeInMB < 50,
             mobileOptimized: sizeInMB < 25,
-            suggestions: generateSuggestions(sizeInMB, estimatedDuration)
+            hasRealData: !!realTimeStats?.durationSeconds,
+            suggestions: generateSuggestions(sizeInMB, actualDuration)
           }
           
-          setAnalysisData(mockAnalysis)
-          setStatus('✅ Analysis complete!')
+          setAnalysisData(combinedAnalysis)
+          setStatus('✅ Analysis complete!' + (combinedAnalysis.hasRealData ? ' (Real video data)' : ' (File data only)'))
           setIsAnalyzing(false)
-        }, 2000)
+        }, 3000) // Give more time for video to load
       } else {
         clearInterval(progressInterval)
         setStatus('❌ Could not determine file size. Server may not support HEAD requests.')
@@ -301,12 +355,16 @@ export default function YouTubeVideoAnalyzer() {
           <CardContent>
             <div className="flex justify-center">
               <video 
+                ref={videoRef}
                 src={videoUrl} 
                 controls 
                 preload="metadata"
                 className="max-w-full h-auto rounded-lg shadow-lg"
                 style={{ maxHeight: '400px' }}
-                onError={() => console.log('Video preview not available (CORS or format restrictions)')}
+                onLoadStart={handleVideoLoadStart}
+                onLoadedMetadata={handleVideoLoadedMetadata}
+                onCanPlay={handleVideoCanPlay}
+                onError={handleVideoError}
               >
                 Your browser does not support the video tag.
               </video>
@@ -314,6 +372,35 @@ export default function YouTubeVideoAnalyzer() {
             <div className="mt-3 text-sm text-muted-foreground text-center">
               Video URL: <code className="bg-muted px-1 rounded text-xs">{videoUrl}</code>
             </div>
+            
+            {/* Real-time stats during loading */}
+            {realTimeStats && (
+              <div className="mt-4 p-3 bg-muted rounded-lg">
+                <h4 className="font-medium text-sm mb-2">📊 Real-time Video Stats:</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                  {realTimeStats.duration && (
+                    <div>
+                      <span className="font-medium">Duration:</span> {realTimeStats.duration}
+                    </div>
+                  )}
+                  {realTimeStats.resolution && (
+                    <div>
+                      <span className="font-medium">Resolution:</span> {realTimeStats.resolution}
+                    </div>
+                  )}
+                  {realTimeStats.fileSizeMB && (
+                    <div>
+                      <span className="font-medium">File Size:</span> {realTimeStats.fileSizeMB} MB
+                    </div>
+                  )}
+                  {realTimeStats.loadTime && (
+                    <div>
+                      <span className="font-medium">Load Time:</span> {realTimeStats.loadTime}s
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
@@ -348,11 +435,18 @@ export default function YouTubeVideoAnalyzer() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {Math.floor(analysisData.duration / 60)}:{(analysisData.duration % 60).toString().padStart(2, '0')}
+                  {analysisData.durationText || `${Math.floor(analysisData.duration / 60)}:${(Math.floor(analysisData.duration % 60)).toString().padStart(2, '0')}`}
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Perfect for mid-roll ads
-                </p>
+                <div className="flex items-center gap-1 mt-2">
+                  <Badge variant={analysisData.hasRealData ? "default" : "secondary"} className="text-xs">
+                    {analysisData.hasRealData ? "Real Data" : "Estimated"}
+                  </Badge>
+                  {analysisData.duration > 480 && (
+                    <Badge variant="default" className="text-xs">
+                      Mid-roll Ready
+                    </Badge>
+                  )}
+                </div>
               </CardContent>
             </Card>
 

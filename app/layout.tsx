@@ -3,6 +3,7 @@ import "./globals.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import Script from "next/script"
+import { Analytics } from "@vercel/analytics/react"
 import { Header } from "@/components/header" // Import the Header component
 import { Footer } from "@/components/footer" // Import the Footer component
 
@@ -64,6 +65,7 @@ export default function RootLayout({
           ></script>
         </div>
         <Footer /> {/* Add the Footer component here */}
+        <Analytics />
       </body>
     </html>
   )

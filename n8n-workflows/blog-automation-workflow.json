@@ -1,0 +1,327 @@
+{
+  "name": "YouTube Monetization Blog Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 */2 * *"
+            }
+          ]
+        }
+      },
+      "id": "scheduler",
+      "name": "Every Other Day at 9 AM",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 1 * *"
+            }
+          ]
+        }
+      },
+      "id": "weekly-keyword-scheduler",
+      "name": "Weekly Keyword Fetch (1st of month)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 100]
+    },
+    {
+      "parameters": {
+        "url": "https://apiv2.ahrefs.com",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "ahrefsApi",
+        "requestMethod": "POST",
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "{\n  \"target\": \"youtube.com\",\n  \"mode\": \"subdomains\",\n  \"limit\": 50,\n  \"order_by\": \"search_volume:desc\",\n  \"where\": \"search_volume > 1000 AND keyword_difficulty < 30\"\n}",
+        "options": {}
+      },
+      "id": "ahrefs-keywords",
+      "name": "Fetch High-Ranking Keywords",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 100]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM keywords WHERE created_at > NOW() - INTERVAL 7 DAY ORDER BY search_volume DESC LIMIT 5"
+      },
+      "id": "get-keywords",
+      "name": "Get Recent Keywords",
+      "type": "n8n-nodes-base.mysql",
+      "typeVersion": 2.4,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "messages": {
+          "values": [
+            {
+              "content": "You are an expert SEO content writer with 10+ years of experience in YouTube monetization, growth hacking, and digital marketing. Create a comprehensive blog post that:\n\n1. Targets the keyword: {{ $json.keyword }}\n2. Includes advanced SEO practices:\n   - Proper heading structure (H1, H2, H3)\n   - Meta description optimization\n   - Internal linking opportunities\n   - Long-tail keyword variations\n   - FAQ sections\n   - Schema markup suggestions\n   - E-A-T (Expertise, Authoritativeness, Trustworthiness) signals\n\n3. Content structure:\n   - Compelling hook in first 100 words\n   - 2000-3000 words total\n   - Actionable insights and strategies\n   - Data-driven examples\n   - Current 2025 trends and updates\n   - Clear call-to-actions\n\n4. Tone: Professional, authoritative, but accessible\n5. Include specific YouTube monetization examples and case studies\n6. Add relevant statistics and data points\n7. Create a comprehensive outline first, then write the full content\n\nKeyword: {{ $json.keyword }}\nSearch Volume: {{ $json.search_volume }}\nKeyword Difficulty: {{ $json.keyword_difficulty }}\n\nReturn the response in this JSON format:\n{\n  \"title\": \"SEO-optimized title\",\n  \"slug\": \"url-friendly-slug\",\n  \"excerpt\": \"Compelling meta description (150-160 chars)\",\n  \"content\": \"Full markdown content with proper headings\",\n  \"tags\": [\"tag1\", \"tag2\", \"tag3\"],\n  \"category\": \"YouTube Monetization\",\n  \"readTime\": \"X min read\",\n  \"seo_meta\": {\n    \"focus_keyword\": \"primary keyword\",\n    \"secondary_keywords\": [\"keyword1\", \"keyword2\"],\n    \"internal_links\": [\"suggested internal link 1\", \"suggested internal link 2\"],\n    \"schema_suggestions\": [\"Article\", \"FAQPage\", \"HowTo\"]\n  }\n}",
+              "role": "user"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 4000
+        }
+      },
+      "id": "generate-content",
+      "name": "Generate Blog Content",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "model": "dall-e-3",
+        "prompt": "Create a professional, modern blog cover image for a YouTube monetization article titled '{{ $json.title }}'. The image should be:\n- 1200x630 pixels (Open Graph optimized)\n- Professional color scheme (blues, whites, subtle gradients)\n- Include YouTube logo or monetization symbols\n- Clean, modern design\n- High contrast text overlay area\n- Suitable for social media sharing\n- No text on the image itself",
+        "options": {
+          "size": "1792x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      },
+      "id": "generate-image",
+      "name": "Generate Cover Image",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.3,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.unsplash.com/photos/random",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "unsplashApi",
+        "requestMethod": "GET",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "{{ $json.keyword }} YouTube monetization"
+            },
+            {
+              "name": "orientation",
+              "value": "landscape"
+            },
+            {
+              "name": "w",
+              "value": "1200"
+            },
+            {
+              "name": "h",
+              "value": "630"
+            }
+          ]
+        }
+      },
+      "id": "unsplash-fallback",
+      "name": "Unsplash Fallback Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 500]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "image-generated",
+              "leftValue": "={{ $json.image_url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "isNotEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "image-check",
+      "name": "Check Image Generated",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://your-domain.com/api/blog-posts",
+        "requestMethod": "POST",
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "{\n  \"title\": \"{{ $json.title }}\",\n  \"slug\": \"{{ $json.slug }}\",\n  \"excerpt\": \"{{ $json.excerpt }}\",\n  \"content\": \"{{ $json.content }}\",\n  \"tags\": {{ $json.tags }},\n  \"category\": \"{{ $json.category }}\",\n  \"readTime\": \"{{ $json.readTime }}\",\n  \"coverImage\": \"{{ $json.image_url || $('Unsplash Fallback Image').item.json.urls.regular }}\",\n  \"seo_meta\": {{ $json.seo_meta }},\n  \"publishedAt\": \"{{ new Date().toISOString().split('T')[0] }}\",\n  \"author\": {\n    \"name\": \"Krish Patel\",\n    \"avatar\": \"/placeholder-user.jpg\"\n  }\n}",
+        "options": {}
+      },
+      "id": "publish-blog",
+      "name": "Publish Blog Post",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO keywords (keyword, search_volume, keyword_difficulty, created_at) VALUES (?, ?, ?, NOW())",
+        "additionalFields": {
+          "queryParams": "={{ $json.keyword }}, {{ $json.search_volume }}, {{ $json.keyword_difficulty }}"
+        }
+      },
+      "id": "save-keywords",
+      "name": "Save Keywords to DB",
+      "type": "n8n-nodes-base.mysql",
+      "typeVersion": 2.4,
+      "position": [680, 100]
+    },
+    {
+      "parameters": {
+        "url": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
+        "requestMethod": "POST",
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "{\n  \"text\": \"🚀 New blog post published: {{ $json.title }}\",\n  \"attachments\": [\n    {\n      \"color\": \"good\",\n      \"fields\": [\n        {\n          \"title\": \"Title\",\n          \"value\": \"{{ $json.title }}\",\n          \"short\": false\n        },\n        {\n          \"title\": \"URL\",\n          \"value\": \"https://your-domain.com/blogs/{{ $json.slug }}\",\n          \"short\": false\n        },\n        {\n          \"title\": \"Read Time\",\n          \"value\": \"{{ $json.readTime }}\",\n          \"short\": true\n        }\n      ]\n    }\n  ]\n}"
+      },
+      "id": "slack-notification",
+      "name": "Slack Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 300]
+    }
+  ],
+  "connections": {
+    "Every Other Day at 9 AM": {
+      "main": [
+        [
+          {
+            "node": "Get Recent Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly Keyword Fetch (1st of month)": {
+      "main": [
+        [
+          {
+            "node": "Fetch High-Ranking Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch High-Ranking Keywords": {
+      "main": [
+        [
+          {
+            "node": "Save Keywords to DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent Keywords": {
+      "main": [
+        [
+          {
+            "node": "Generate Blog Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Blog Content": {
+      "main": [
+        [
+          {
+            "node": "Generate Cover Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Cover Image": {
+      "main": [
+        [
+          {
+            "node": "Check Image Generated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unsplash Fallback Image": {
+      "main": [
+        [
+          {
+            "node": "Publish Blog Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Image Generated": {
+      "main": [
+        [
+          {
+            "node": "Publish Blog Post",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unsplash Fallback Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish Blog Post": {
+      "main": [
+        [
+          {
+            "node": "Slack Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-01-27T10:00:00.000Z",
+  "versionId": "1"
+}

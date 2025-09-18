@@ -1,0 +1,135 @@
+name: Automated Blog Content Generation
+
+on:
+  schedule:
+    # Run every other day at 9 AM UTC
+    - cron: '0 9 */2 * *'
+  # Run weekly on Mondays at 8 AM UTC for keyword fetching
+  - cron: '0 8 * * 1'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'generate-blog'
+        type: choice
+        options:
+          - generate-blog
+          - fetch-keywords
+          - both
+
+env:
+  NODE_VERSION: '18'
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  AHREFS_API_KEY: ${{ secrets.AHREFS_API_KEY }}
+  UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+jobs:
+  fetch-keywords:
+    if: github.event.schedule == '0 8 * * 1' || github.event.inputs.action == 'fetch-keywords' || github.event.inputs.action == 'both'
+    runs-on: ubuntu-latest
+    name: Fetch High-Ranking Keywords
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch keywords from Ahrefs
+        run: |
+          node scripts/fetch-keywords.js
+        env:
+          AHREFS_API_KEY: ${{ env.AHREFS_API_KEY }}
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+
+      - name: Commit and push keyword updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/keywords.json
+          git diff --staged --quiet || git commit -m "Update keywords from Ahrefs API"
+          git push
+
+  generate-blog:
+    if: github.event.schedule == '0 9 */2 * *' || github.event.inputs.action == 'generate-blog' || github.event.inputs.action == 'both'
+    runs-on: ubuntu-latest
+    name: Generate and Publish Blog Post
+    needs: fetch-keywords
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate blog content
+        run: |
+          node scripts/generate-blog.js
+        env:
+          OPENAI_API_KEY: ${{ env.OPENAI_API_KEY }}
+          UNSPLASH_ACCESS_KEY: ${{ env.UNSPLASH_ACCESS_KEY }}
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+
+      - name: Build and deploy
+        run: |
+          npm run build
+          # Add your deployment commands here
+          # For example, if using Vercel:
+          # npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Notify on success
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: '🚀 New blog post generated and published successfully!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify on failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: '❌ Blog generation failed. Check the logs for details.'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  quality-check:
+    runs-on: ubuntu-latest
+    name: Content Quality Check
+    needs: generate-blog
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run content quality checks
+        run: |
+          node scripts/quality-check.js
+
+      - name: Upload quality report
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-report
+          path: reports/quality-report.json
